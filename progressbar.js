@@ -12,25 +12,25 @@ class Progressbar {
     this.layValue = app.CreateLayout("Linear");
   }
   
-  get BackgroundColor() { return this.backColor };
-  get ForegroundColor() { return this.foregroundColor };
-  get MaxValue() { return this.maxValue };
-  get CurrentValue() { return this.currentValue };
-  get Thickness() { return this.thickness };
-  get LayoutPool() { return this.layPool };
+  get BackgroundColor() { return this.backColor }
+  get ForegroundColor() { return this.foregroundColor }
+  get MaxValue() { return this.maxValue }
+  get CurrentValue() { return this.currentValue }
+  get Thickness() { return this.thickness }
+  get LayoutPool() { return this.layPool }
   
-  set BackgroundColor(color) { this.layBack.SetBackColor(color); };
-  set ForegroundColor(color) { this.layValue.SetBackColor(color); };
-  set MaxValue(value) { this.maxValue = value };
+  set BackgroundColor(color) { this.layBack.SetBackColor(color); }
+  set ForegroundColor(color) { this.layValue.SetBackColor(color); }
+  set MaxValue(value) { this.maxValue = value }
   set CurrentValue(value) {
     this.currentValue = value;
     this.Update(value)
-  };
+  }
   set Thickness(thickness) {
     this.thickness = thickness;
     this.layBack.SetSize(this.width, thickness);
     this.layValue.SetSize(this, thickness);
-  }; 
+  }
   
   Create() {
     var layFrame = app.CreateLayout("Frame");

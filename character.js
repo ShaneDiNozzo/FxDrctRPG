@@ -17,12 +17,6 @@ class Character {
   set XP(xp)     { this.xp   = xp;   }
   
   Hit() {
-    Randoms.Half(this.str);
-    //var minimum = 50 / 100 * this.str;
-    //return Math.floor(Math.random() * (this.str - minimum + 1)) + minimum;
-  }
-  
-  AddXP(xp) {
-    this.xp = this.xp + xp;
+    return Randoms.Half(this.str);
   }
 }
