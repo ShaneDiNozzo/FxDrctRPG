@@ -21,7 +21,10 @@ class Progressbar {
   
   set BackgroundColor(color) { this.layBack.SetBackColor(color); }
   set ForegroundColor(color) { this.layValue.SetBackColor(color); }
-  set MaxValue(value) { this.maxValue = value }
+  set MaxValue(value) { 
+    this.maxValue = value;
+    this.Update(this.currentValue);
+  }
   set CurrentValue(value) {
     this.currentValue = value;
     this.Update(value)
@@ -52,7 +55,8 @@ class Progressbar {
   Update(value) {
     if (value > this.maxValue) return;
     var spct = (value / this.maxValue * 100).toFixed(0);
-    this.barSize = this.width * (spct / 100); // compute bar siz
+    this.barSize = this.width * (spct / 100);
     this.layValue.SetSize(this.barSize, this.thickness);
+    this.currentValue = value;
   }
 }
