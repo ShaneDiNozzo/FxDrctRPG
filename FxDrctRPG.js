@@ -13,9 +13,11 @@ var strings = {
   level: "Level: ",
   requiredxp: "Required XP: "
 }
+imgMonster = "";
 
 function OnStart() {
   layMain = app.CreateLayout("Absolute", "FillXY");
+  layMain.SetBackground("img/green.png");
   layMain.SetSize(1, -1);
   
   player = new Player("Shane");
@@ -47,23 +49,42 @@ function OnStart() {
   });
   layMonsterStuff.AddChild(btnEncounter);
   
+  imgMonster = app.CreateImage("img/blankport.png", 0.5, -1);
+  layMonsterStuff.AddChild(imgMonster);
+  
   layPlayerStuff = app.CreateLayout("Linear", null, null, "VCenter, Bottom");
   layPlayerStuff.SetSize(1, -1);
-  layPlayerStuff.SetPosition(0, 0.78);
+  layPlayerStuff.SetPosition(0, 0.76);
   //layPlayerStuff.SetBackColor("green");
   layMain.AddChild(layPlayerStuff);
   
   layButtonLine = app.CreateLayout("Linear", "Horizontal");
   layPlayerStuff.AddChild(layButtonLine);
   
-  btnAttack = app.CreateButton("Attack");
+  btnAttack = app.CreateButton("Attack", null, null, "Custom");
+  btnAttack.SetStyle("#4285F4", "#4285F4");
   btnAttack.SetOnTouch(function() {
     player.GetHit(encounter.monster.Hit());
     txtMonsterLastAttack.SetText(strings.lastattack +
       encounter.monster.LastAttack);
+    txtCharacterLastAttack.SetText(strings.lastattack +
+      player.LastAttack);
+    if(encounter.monster.LastAttack == encounter.monster.STR * 2) {
+      txtMonsterLastAttack.SetTextColor("yellow");
+    } else {
+      txtMonsterLastAttack.SetTextColor("white");
+    }
+    
+    if(player.LastAttack == player.STR * 2) {
+      txtCharacterLastAttack.SetTextColor("yellow");
+    } else {
+      txtCharacterLastAttack.SetTextColor("white");
+    }
     encounter.monster.GetHit(player.Hit());
     if(player.isDied()) {
-      prgCharacterHP.SetText("DIED!");
+      diedScreen = new DiedScreen();
+      diedScreen.Create();
+      diedScreen.Show();
     } else {
       prgCharacterHP.SetText(strings.hp + player.HP);
     }
@@ -73,7 +94,7 @@ function OnStart() {
       player.XP = player.XP + encounter.monster.XP;
       if(player.LevelUp()) {
         prgCharacterHP.MaxValue = player.MaxHP;
-        prgCharacterXP.MaxValue = XPTable.LevelXP()[player.LVL];
+        prgCharacterXP.MaxValue = XPTable.NextLevelXP[player.RequiredXP];
         txtRequiredXP.SetText(strings.requiredxp + player.RequiredXP);
         txtCharacterLevel.SetText(strings.level + player.LVL);
         prgCharacterHP.SetText(strings.hp + player.HP);
@@ -118,7 +139,10 @@ function OnStart() {
   txtCharacterSTR = app.CreateText(strings.str + player.STR, 0.8, -1, "Left");
   layPlayerStuff.AddChild(txtCharacterSTR);
   
-  prgCharacterXP = new Progressbar(XPTable.LevelXP()[player.LVL], 1);
+  txtCharacterLastAttack = app.CreateText(strings.lastattack + player.LastAttack, 0.8, -1, "Left");
+  layPlayerStuff.AddChild(txtCharacterLastAttack);
+  
+  prgCharacterXP = new Progressbar(XPTable.NextLevelXP()[player.RequiredXP], 1);
   layPlayerStuff.AddChild(prgCharacterXP.Create());
   prgCharacterXP.ForegroundColor = "grey";
   prgCharacterXP.SetText(strings.xp + player.XP);
@@ -127,10 +151,31 @@ function OnStart() {
   app.AddLayout(layMain);
 }
 
+function DiedScreen() {
+  var layDiedScreen = "";
+  
+  this.Create = () => {
+    this.layDiedScreen = app.CreateLayout("Linear", "FillXY, VCenter");
+    this.layDiedScreen.SetVisibility("Hide");
+    this.layDiedScreen.SetBackColor("black");
+    app.AddLayout(this.layDiedScreen);
+  
+    var txtDied = app.CreateText("DIED!", null, null, "Bold");
+    txtDied.SetTextColor("red");
+    txtDied.SetTextSize(25);
+    this.layDiedScreen.AddChild(txtDied);
+  }
+  
+  this.Show = () => {
+    this.layDiedScreen.Animate("SlideFromRight");
+  }
+}
+
 function showData() {
   nmbMonster.Name = encounter.monster.Name;
   prgMonsterHP.MaxValue = encounter.monster.HP;
   prgMonsterHP.SetText(strings.hp + encounter.monster.HP);
   prgMonsterHP.CurrentValue = encounter.monster.HP;
   txtMonsterSTR.SetText(strings.str + encounter.monster.STR);
+  imgMonster.SetImage(encounter.monster.Image, 0.4, -1);
 }

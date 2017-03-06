@@ -1,11 +1,12 @@
 class Character {
-  constructor(name, maxhp, str, xp) {
+  constructor(name, maxhp, str, xp, img) {
     this.name = name;
     this.maxhp = maxhp;
     this.hp = maxhp;
     this.str = str;
     this.xp = xp;
     this.lastattack = 0;
+    this.img = img;
   }
   
   get Name() { return this.name; }
@@ -14,6 +15,7 @@ class Character {
   get STR() { return this.str; }
   get XP() { return this.xp; }
   get LastAttack() { return this.lastattack; }
+  get Image() { return this.img; }
   
   set Name(name) { this.name = name; }
   set MaxHP(hp) { this.maxhp = hp; }
@@ -21,9 +23,16 @@ class Character {
   set STR(str) { this.str = str; }
   set XP(xp) { this.xp = xp; }
   set LastAttack(atk) { this.lastattack = atk; }
+  set Image(img) { this.img = img; }
   
   Hit() {
-    this.lastattack = Randoms.Half(this.str).toFixed(0);
+    var percentage = Math.random();
+    if(percentage <= 0.4) {
+      this.lastattack = this.str * 2;
+    } else {
+      this.lastattack = Randoms.Half(this.str).toFixed(0);
+    }
+    
     return this.lastattack;
   }
     
@@ -41,12 +50,13 @@ class Player extends Character {
   constructor(name) {
     super(name);
     this.name = name;
-    this.maxhp = 20;
-    this.hp = 20;
+    this.maxhp = 25;
+    this.hp = 25;
     this.str = 3;
     this.xp = 0;
     this.lvl = 1;
-    this.requiredxp = XPTable.LevelXP()[this.lvl];
+    //this.requiredxp = XPTable.LevelXP()[this.lvl];
+    this.requiredxp = XPTable.NextLevelXP(this.lvl);
   }
   
   get RequiredXP() { return this.requiredxp; }
@@ -58,10 +68,11 @@ class Player extends Character {
   LevelUp() {
     if(this.xp >= this.requiredxp) {
       this.lvl = this.lvl + 1;
-      this.maxhp = this.maxhp + 1;
-      this.str = this.str + 1;
+      if(this.lvl % 3 == 0) this.maxhp = this.maxhp + 2;
+      if(this.lvl % 5 == 0) this.str = this.str + 2;
       this.hp = this.maxhp;
-      this.requiredxp = XPTable.LevelXP()[this.lvl];
+      //this.requiredxp = XPTable.LevelXP()[this.lvl];
+      this.requiredxp = XPTable.NextLevelXP(this.lvl);
       return true;
     }
     return false;
