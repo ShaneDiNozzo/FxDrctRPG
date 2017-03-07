@@ -54,21 +54,4 @@ class XPTable {
   static NextLevelXP(lvl) {
     return lvl * 17;
   }
-  
-/*  static LevelXP() {
-    var table = new Array(11);
-    table[0] = 0;
-    table[1] = 10;
-    table[2] = 20;
-    table[3] = 40;
-    table[4] = 70;
-    table[5] = 110;
-    table[6] = 160;
-    table[7] = 220;
-    table[8] = 290;
-    table[9] = 370;
-    table[10] = 460;
-    
-    return table;
-  } */
 }

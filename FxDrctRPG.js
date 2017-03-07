@@ -17,7 +17,6 @@ imgMonster = "";
 
 function OnStart() {
   layMain = app.CreateLayout("Absolute", "FillXY");
-  layMain.SetBackground("img/green.png");
   layMain.SetSize(1, -1);
   
   player = new Player("Shane");
@@ -69,6 +68,7 @@ function OnStart() {
       encounter.monster.LastAttack);
     txtCharacterLastAttack.SetText(strings.lastattack +
       player.LastAttack);
+      
     if(encounter.monster.LastAttack == encounter.monster.STR * 2) {
       txtMonsterLastAttack.SetTextColor("yellow");
     } else {
@@ -80,6 +80,7 @@ function OnStart() {
     } else {
       txtCharacterLastAttack.SetTextColor("white");
     }
+    
     encounter.monster.GetHit(player.Hit());
     if(player.isDied()) {
       diedScreen = new DiedScreen();
@@ -94,11 +95,14 @@ function OnStart() {
       player.XP = player.XP + encounter.monster.XP;
       if(player.LevelUp()) {
         prgCharacterHP.MaxValue = player.MaxHP;
-        prgCharacterXP.MaxValue = XPTable.NextLevelXP[player.RequiredXP];
+        prgCharacterXP.MaxValue = player.RequiredXP;
         txtRequiredXP.SetText(strings.requiredxp + player.RequiredXP);
         txtCharacterLevel.SetText(strings.level + player.LVL);
         prgCharacterHP.SetText(strings.hp + player.HP);
         txtCharacterSTR.SetText(strings.str + player.STR);
+        app.Alert("New level: " + player.LVL + nl +
+          "New HP: " + player.MaxHP + nl +
+          "New STR: " + player.STR, "LEVEL UP!");
       }
       prgCharacterXP.SetText(strings.xp + player.XP);
       encounter.DoEncounter(player.LVL);
@@ -139,10 +143,10 @@ function OnStart() {
   txtCharacterSTR = app.CreateText(strings.str + player.STR, 0.8, -1, "Left");
   layPlayerStuff.AddChild(txtCharacterSTR);
   
-  txtCharacterLastAttack = app.CreateText(strings.lastattack + player.LastAttack, 0.8, -1, "Left");
+  txtCharacterLastAttack = app.CreateText("", 0.8, -1, "Left");
   layPlayerStuff.AddChild(txtCharacterLastAttack);
   
-  prgCharacterXP = new Progressbar(XPTable.NextLevelXP()[player.RequiredXP], 1);
+  prgCharacterXP = new Progressbar(player.RequiredXP, 1);
   layPlayerStuff.AddChild(prgCharacterXP.Create());
   prgCharacterXP.ForegroundColor = "grey";
   prgCharacterXP.SetText(strings.xp + player.XP);
