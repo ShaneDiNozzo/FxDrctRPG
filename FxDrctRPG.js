@@ -2,6 +2,8 @@ app.LoadScript("ui.js");
 app.LoadScript("character.js");
 app.LoadScript("encounter.js");
 app.LoadScript("misc.js");
+app.LoadScript("player_details_screen.js");
+app.LoadScript("items.js");
 
 var nl = "\n";
 var strings = {
@@ -11,7 +13,11 @@ var strings = {
   lastattack: "Last attack: ",
   xp: "XP: ",
   level: "Level: ",
-  requiredxp: "Required XP: "
+  requiredxp: "Required XP: ",
+  maxhp: "Maximum HP: ",
+  currenthp: "Current HP",
+  armor: "Armor: ",
+  weapon: "Weapon: "
 }
 imgMonster = "";
 
@@ -21,7 +27,8 @@ function OnStart() {
   
   player = new Player("Shane");
   encounter = new Encounter();
-  
+  inventory = new PlayerDetailsScreen();
+
   nmbMonster = new Namebar("", "blue");
   layMain.AddChild(nmbMonster.Create());
   
@@ -41,15 +48,11 @@ function OnStart() {
   txtMonsterLastAttack = app.CreateText("");
   layMonsterStuff.AddChild(txtMonsterLastAttack);
   
-  btnEncounter = app.CreateButton("encounter");
-  btnEncounter.SetOnTouch(() => { 
-    encounter.DoEncounter(player.LVL);
-    showData();
-  });
-  layMonsterStuff.AddChild(btnEncounter);
-  
   imgMonster = app.CreateImage("img/blankport.png", 0.5, -1);
   layMonsterStuff.AddChild(imgMonster);
+  
+  encounter.DoEncounter(player.LVL);
+  updateMonsterData();
   
   layPlayerStuff = app.CreateLayout("Linear", null, null, "VCenter, Bottom");
   layPlayerStuff.SetSize(1, -1);
@@ -99,14 +102,13 @@ function OnStart() {
         txtRequiredXP.SetText(strings.requiredxp + player.RequiredXP);
         txtCharacterLevel.SetText(strings.level + player.LVL);
         prgCharacterHP.SetText(strings.hp + player.HP);
-        txtCharacterSTR.SetText(strings.str + player.STR);
         app.Alert("New level: " + player.LVL + nl +
           "New HP: " + player.MaxHP + nl +
           "New STR: " + player.STR, "LEVEL UP!");
       }
       prgCharacterXP.SetText(strings.xp + player.XP);
       encounter.DoEncounter(player.LVL);
-      showData();
+      updateMonsterData();
     }
     
     prgCharacterXP.Update(player.XP);
@@ -118,7 +120,12 @@ function OnStart() {
   btnSkill = app.CreateButton("Skill");
   layButtonLine.AddChild(btnSkill);
   
-  btnInventory = app.CreateButton("Inventory");
+  btnInventory = app.CreateButton("Inventory", null, null, "Custom");
+  btnInventory.SetStyle("#4285F4", "#4285F4");
+  btnInventory.SetOnTouch(() => {
+    inventory.Show();
+    inventory.Update();
+  });
   layButtonLine.AddChild(btnInventory);
   
   btnRun = app.CreateButton("Run!");
@@ -128,6 +135,7 @@ function OnStart() {
   layPlayerStuff.AddChild(prgCharacterHP.Create());
   prgCharacterHP.SetText(strings.hp + player.HP);
   prgCharacterHP.ForegroundColor = "red";
+  prgCharacterHP.BackgroundColor = "grey";
   prgCharacterHP.Update(player.HP);
   
   txtRequiredXP = app.CreateText(strings.requiredxp + player.RequiredXP);
@@ -140,19 +148,19 @@ function OnStart() {
     player.LVL, 0.8, -1, "Left");
   layPlayerStuff.AddChild(txtCharacterLevel);
   
-  txtCharacterSTR = app.CreateText(strings.str + player.STR, 0.8, -1, "Left");
-  layPlayerStuff.AddChild(txtCharacterSTR);
-  
   txtCharacterLastAttack = app.CreateText("", 0.8, -1, "Left");
   layPlayerStuff.AddChild(txtCharacterLastAttack);
   
   prgCharacterXP = new Progressbar(player.RequiredXP, 1);
   layPlayerStuff.AddChild(prgCharacterXP.Create());
-  prgCharacterXP.ForegroundColor = "grey";
+  prgCharacterXP.BackgroundColor = "grey";
+  prgCharacterXP.ForegroundColor = "yellow";
   prgCharacterXP.SetText(strings.xp + player.XP);
+  prgCharacterXP.TextColor = "blue";
   prgCharacterXP.Update(player.XP);
   
   app.AddLayout(layMain);
+  inventory.Create();
 }
 
 function DiedScreen() {
@@ -175,7 +183,7 @@ function DiedScreen() {
   }
 }
 
-function showData() {
+function updateMonsterData() {
   nmbMonster.Name = encounter.monster.Name;
   prgMonsterHP.MaxValue = encounter.monster.HP;
   prgMonsterHP.SetText(strings.hp + encounter.monster.HP);

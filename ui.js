@@ -47,13 +47,14 @@ class Progressbar {
     this.layPool = app.CreateLayout("Linear");
     this.thickness = 0.03;
     this.barSize = 0;
-    this.layBack = app.CreateLayout("Linear", "VCenter");
-    this.layValue = app.CreateLayout("Linear");
+    this.layBack = app.CreateLayout("Linear");
+    this.layValue = app.CreateLayout("Linear", "VCenter");
     this.txt = "";
-    this.txtColor = "";
+    this.txtColor = "grey";
+    this.layTXT = app.CreateLayout("Linear", "VCenter");
   }
   
-  get BackgroundColor() { return this.backColor; }
+  get BackgroundColor() {return this.backColor; }
   get ForegroundColor() { return this.foregroundColor; }
   get MaxValue() { return this.maxValue; }
   get CurrentValue() { return this.currentValue; }
@@ -61,10 +62,16 @@ class Progressbar {
   get LayoutPool() { return this.layPool; }
   get TextColor() { return this.txtColor; }
   
-  set BackgroundColor(color) { this.layBack.SetBackColor(color); }
-  set ForegroundColor(color) { this.layValue.SetBackColor(color); }
+  set BackgroundColor(color) {
+    this.backColor = color;
+    this.layBack.SetBackColor(this.backColor);
+  }
+  set ForegroundColor(color) {
+    this.foregroundColor = color;
+    this.layValue.SetBackColor(this.foregroundColor); 
+  }
   set MaxValue(value) { 
-    this.maxValue = value;
+    this.maxValue = value;  
     this.Update(this.currentValue);
   }
   set CurrentValue(value) {
@@ -78,26 +85,27 @@ class Progressbar {
   }
   set TextColor(color) {
     this.txtColor = color;
-    this.txt.SetTextColor = this.txtColor;
+    this.txt.SetTextColor(this.txtColor);
   }
   
   Create() {
     var layFrame = app.CreateLayout("Frame");
     
     this.layBack.SetSize(this.width, this.thickness);
-    //this.layBack.SetBackColor(this.backColor);
+    this.layBack.SetBackColor(this.backColor);
     
     this.layValue.SetSize(0, this.thickness);
     this.layValue.SetBackColor(this.foregroundColor);
     
+    this.layTXT.SetSize(this.width, this.thickness);
+    
     this.txt = app.CreateText("", null, null, "Center");
-    this.txt.SetTextColor("white");
     this.txt.SetSize(this.width, -1);
+    this.layTXT.AddChild(this.txt);
     
-    layFrame.AddChild(this.layValue);
     layFrame.AddChild(this.layBack);
-    this.layBack.AddChild(this.txt);
-    
+    layFrame.AddChild(this.layValue);
+    layFrame.AddChild(this.layTXT);
     
     this.layPool.AddChild(layFrame);
     

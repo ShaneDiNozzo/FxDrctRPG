@@ -55,15 +55,21 @@ class Player extends Character {
     this.str = 3;
     this.xp = 0;
     this.lvl = 1;
-    //this.requiredxp = XPTable.LevelXP()[this.lvl];
     this.requiredxp = XPTable.NextLevelXP(this.lvl);
+    var equip = new Items();
+    this.armor = equip.armors[equip.equipmentHelper.training];
+    this.weapon = equip.weapons[equip.equipmentHelper.training];
   }
   
   get RequiredXP() { return this.requiredxp; }
   get LVL() { return this.lvl; }
+  get Armor() { return this.armor; }
+  get Weapon() { return this.weapon; }
   
   set RequiredXP(xp) { this.requiredxp = xp; }
   set LVL(lvl) { this.lvl = lvl; }
+  set Armor(armor) { this.armor = armor; }
+  set Weapon(weapon) { this.weapon = weapon; }
   
   LevelUp() {
     if(this.xp >= this.requiredxp) {
@@ -71,7 +77,6 @@ class Player extends Character {
       if(this.lvl % 3 == 0) this.maxhp = this.maxhp + 2;
       if(this.lvl % 5 == 0) this.str = this.str + 2;
       this.hp = this.maxhp;
-      //this.requiredxp = XPTable.LevelXP()[this.lvl];
       this.requiredxp = XPTable.NextLevelXP(this.lvl);
       return true;
     }
